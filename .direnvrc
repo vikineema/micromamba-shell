@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Global direnv configuration
+# Disable slow command warnings
+export DIRENV_WARN_TIMEOUT=0
+
+# Custom function for quiet flake usage (optional)
+use_flake_quiet() {
+    export DIRENV_LOG_FORMAT=""
+    use flake "${1:-.}" --quiet 2>/dev/null
+}
+
+# Alternative: Set a higher timeout (in seconds) instead of disabling
+# export DIRENV_WARN_TIMEOUT=30
