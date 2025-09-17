@@ -15,15 +15,26 @@
         inherit system;
         config.allowUnfree = false;
       };
-
-      micromamba-shell =
-        import ./packages/micromamba-shell/default.nix { inherit pkgs; };
-    in
-    {
+    in  {
+    ######################################################
+    ##
+    ## Package Definitions
+    ##
+    ######################################################
+    packages.${system} = rec {
+        micromamba-shell = pkgs.callPackage ./packages/micromamba-shell { };
+        default = micromamba-shell;
+      };
+    
+    ######################################################
+    ##
+    ## Apps
+    ##
+    ######################################################
       apps.${system} = {
         micromamba-shell = {
           type = "app";
-          program = "${micromamba-shell}/bin/micromamba-shell";
+          program = "${self.packages.${system}.micromamba-shell}/bin/micromamba-shell";
         };
 
         default = self.apps.${system}.micromamba-shell;
