@@ -8,36 +8,41 @@
 
   outputs = { self, nixpkgs, ... }:
     let
-      system = "x86_64-linux";
+      supportedSystems = [ "x86_64-linux"];
+      forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
 
-      # Use a system-specific version of Nixpkgs
-      pkgs = import nixpkgs {
-        inherit system;
+      pkgsFor = forAllSystems (system: import nixpkgs {
+        localSystem = system;
         config.allowUnfree = false;
-      };
+      });
+
     in  {
     ######################################################
     ##
     ## Package Definitions
     ##
     ######################################################
-    packages.${system} = rec {
+    packages = forAllSystems (system: 
+      let 
+        pkgs = pkgsFor.${system}; 
+      in rec {
         micromamba-shell = pkgs.callPackage ./packages/micromamba-shell { };
         default = micromamba-shell;
-      };
+      }
+    );
     
     ######################################################
     ##
     ## Apps
     ##
     ######################################################
-      apps.${system} = {
+    apps = forAllSystems (system: {
         micromamba-shell = {
           type = "app";
           program = "${self.packages.${system}.micromamba-shell}/bin/micromamba-shell";
         };
 
         default = self.apps.${system}.micromamba-shell;
-      };
-    };
+    });
+  };
 }
