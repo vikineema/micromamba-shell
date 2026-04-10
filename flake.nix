@@ -8,16 +8,20 @@
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs { inherit system; };
+
       micromamba-fhs-name = "micromamba-shell";
       micromamba-fhs-version = "v1.0.0";
+
       micromamba-fhs = pkgs.buildFHSEnv {
         pname = micromamba-fhs-name;
         version = micromamba-fhs-version;
+
         targetPkgs =
           pkgs: with pkgs; [
             micromamba
             bash-completion
           ];
+
         profile = ''
           # Silence 'complete' command errors if the builtin isn't ready
           type complete &>/dev/null || complete() { :; }
@@ -42,9 +46,10 @@
         runScript = "bash --login --rcfile /etc/profile";
       };
     in
-    { 
+    {
       # Installable package
       packages.${system}.default = micromamba-fhs;
+      
       # Used for nix-develop
       devShells.${system}.default = pkgs.mkShell {
         name = micromamba-fhs-name + "-" + micromamba-fhs-version;
