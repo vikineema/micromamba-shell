@@ -20,6 +20,12 @@
           pkgs: with pkgs; [
             micromamba
             bash-completion
+            /*
+            This package is required to fix the error
+            bash: /etc/profile.d/vte.sh: No such file or directory
+            but is not a direct dependency of micromamba, so we add it here.
+            */
+            vte 
           ];
 
         profile = ''
